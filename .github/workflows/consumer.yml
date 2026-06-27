@@ -14,10 +14,6 @@ jobs:
   consumer-tests:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,19 +25,21 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Verify Repository
+      - name: Debug Repository
         run: |
           pwd
+          echo "---------------- ROOT ----------------"
           ls -la
-          find . -name pom.xml
+          echo "---------------- ALL FILES ----------------"
+          find . -maxdepth 3
 
       - name: Run Consumer Tests
-        run: mvn -f pom.xml -pl pos clean test
+        run: mvn -pl pos test
 
       - name: Publish Pact
         if: success()
-        run: mvn -f pom.xml -pl pos pact:publish
+        run: mvn -pl pos pact:publish
 
       - name: Can I Deploy
         if: success()
-        run: mvn -f pom.xml -pl pos pact:can-i-deploy
+        run: mvn -pl pos pact:can-i-deploy
