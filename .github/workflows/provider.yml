@@ -31,13 +31,8 @@ jobs:
           java-version: '17'
           cache: maven
 
-     
       - name: Verify Provider
         run: mvn -f sat-assesment2706/pom.xml -pl oms test
-
-      - name: Publish Verification
-        if: success()
-        run: mvn -f sat-assesment2706/pom.xml -pl oms pact:verify
 
       - name: Can I Deploy
         if: success()
