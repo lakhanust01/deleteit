@@ -3,11 +3,11 @@ name: Provider Pact Pipeline
 on:
   push:
     paths:
-      - 'sat-assessment2706/oms/**'
+      - 'sat-assesment2706/oms/**'
       - '.github/workflows/provider.yml'
   pull_request:
     paths:
-      - 'sat-assessment2706/oms/**'
+      - 'sat-assesment2706/oms/**'
       - '.github/workflows/provider.yml'
 
 jobs:
@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Show Repository Structure
         run: |
@@ -23,20 +24,23 @@ jobs:
           ls -la
           find . -maxdepth 4 -type f -name "pom.xml"
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
 
       - name: Fetch Pact
-        run: mvn -f sat-assessment2706/pom.xml -pl oms pact:fetch
+        run: mvn -f sat-assesment2706/pom.xml -pl oms pact:fetch
 
       - name: Verify Provider
-        run: mvn -f sat-assessment2706/pom.xml -pl oms test
+        run: mvn -f sat-assesment2706/pom.xml -pl oms test
 
       - name: Publish Verification
-        run: mvn -f sat-assessment2706/pom.xml -pl oms pact:verify
+        if: success()
+        run: mvn -f sat-assesment2706/pom.xml -pl oms pact:verify
 
       - name: Can I Deploy
-        run: mvn -f sat-assessment2706/pom.xml -pl oms pact:can-i-deploy
+        if: success()
+        run: mvn -f sat-assesment2706/pom.xml -pl oms pact:can-i-deploy
