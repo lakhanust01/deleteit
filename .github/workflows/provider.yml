@@ -12,33 +12,55 @@ on:
 
 jobs:
   provider-verification:
+    environment: Pact
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: 0. Checkout Code
         uses: actions/checkout@v4
 
-      - name: Show Repository Structure
-        run: |
-          pwd
-          ls -la
-          find . -maxdepth 4 -type f -name "pom.xml"
-
-      - name: Setup Java
+      - name: 0. Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
 
-      - name: Verify Provider
+      - name: 1. Install Pact CLI
+        run: |
+          curl -fsSL https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v2.4.5/pact-2.4.5-linux-x86_64.tar.gz | tar xz -C $HOME
+          echo "$HOME/pact/bin" >> $GITHUB_PATH
+
+      - name: 2. Show Repository Structure
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 4 -type f -name "pom.xml"
+
+      - name: 3. Verify Provider Against Pact Broker
+        env:
+          PACT_BROKER_BASE_URL: https://qwq.pactflow.io
+          PACT_BROKER_TOKEN: DrLusdyyj6UlhPprN3cneQ
+          PACT_PROVIDER_VERSION: ${{ github.sha }}
+          PACT_PROVIDER_BRANCH: main
         run: mvn -f sat-assesment2706/pom.xml -pl oms test
 
-      - name: Can I Deploy
+      - name: 4. Record Deployment to Production
         if: success()
-        run: >
-          mvn -f sat-assesment2706/pom.xml
-          -pl oms
-          pact:can-i-deploy
-          -Dpacticipant=oms
-          -DpacticipantVersion=1.0-SNAPSHOT
+        run: |
+          pact-broker record-deployment \
+            --pacticipant=oms \
+            --version=${{ github.sha }} \
+            --environment=production \
+            --broker-base-url=https://qwq.pactflow.io \
+            --broker-token=DrLusdyyj6UlhPprN3cneQ
+
+      - name: 5. Can I Deploy
+        if: success()
+        run: |
+          pact-broker can-i-deploy \
+            --pacticipant=oms \
+            --version=${{ github.sha }} \
+            --latest \
+            --broker-base-url=https://qwq.pactflow.io \
+            --broker-token=DrLusdyyj6UlhPprN3cneQ
