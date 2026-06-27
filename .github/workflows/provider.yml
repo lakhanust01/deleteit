@@ -45,7 +45,15 @@ jobs:
           PACT_PROVIDER_BRANCH: main
         run: mvn -f sat-assesment2706/pom.xml -pl oms test
 
-      - name: 4. Record Deployment to Production
+      - name: 4. Create Provider Version in Broker
+        if: success()
+        run: |
+          curl -X PUT https://qwq.pactflow.io/pacticipants/oms/versions/${{ github.sha }} \
+            -H "Authorization: Bearer DrLusdyyj6UlhPprN3cneQ" \
+            -H "Content-Type: application/json" \
+            -d '{"branch": "main"}'
+
+      - name: 5. Record Deployment to Production
         if: success()
         run: |
           pact-broker record-deployment \
@@ -55,12 +63,12 @@ jobs:
             --broker-base-url=https://qwq.pactflow.io \
             --broker-token=DrLusdyyj6UlhPprN3cneQ
 
-      - name: 5. Can I Deploy
+      - name: 6. Can I Deploy
         if: success()
         run: |
           pact-broker can-i-deploy \
             --pacticipant=oms \
             --version=${{ github.sha }} \
-            --latest \
+            --to-environment=production \
             --broker-base-url=https://qwq.pactflow.io \
             --broker-token=DrLusdyyj6UlhPprN3cneQ

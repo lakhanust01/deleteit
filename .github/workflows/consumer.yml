@@ -55,6 +55,6 @@ jobs:
           pact-broker can-i-deploy \
             --pacticipant=pos \
             --version=${{ github.sha }} \
-            --latest \
+            --to-environment=production \
             --broker-base-url=https://qwq.pactflow.io \
             --broker-token=DrLusdyyj6UlhPprN3cneQ
