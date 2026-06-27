@@ -38,12 +38,13 @@ jobs:
           find . -maxdepth 4 -type f -name "pom.xml"
 
       - name: 3. Verify Provider Against Pact Broker
-        env:
-          PACT_BROKER_BASE_URL: https://qwq.pactflow.io
-          PACT_BROKER_TOKEN: DrLusdyyj6UlhPprN3cneQ
-          PACT_PROVIDER_VERSION: ${{ github.sha }}
-          PACT_PROVIDER_BRANCH: main
-        run: mvn -f sat-assesment2706/pom.xml -pl oms test
+        run: |
+          mvn -f sat-assesment2706/pom.xml -pl oms test \
+            -Dpact.provider.version=${{ github.sha }} \
+            -Dpact.provider.branch=main \
+            -Dpact.verifier.publishResults=true \
+            -Dpactbroker.url=https://qwq.pactflow.io \
+            -Dpactbroker.auth.token=DrLusdyyj6UlhPprN3cneQ
 
       - name: 4. Create Provider Version in Broker
         if: success()
