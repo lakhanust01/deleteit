@@ -1,0 +1,47 @@
+name: Consumer Pact Pipeline
+
+on:
+  push:
+    paths:
+      - 'pos/**'
+      - '.github/workflows/consumer.yml'
+  pull_request:
+    paths:
+      - 'pos/**'
+      - '.github/workflows/consumer.yml'
+
+jobs:
+  consumer-tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Verify Repository
+        run: |
+          pwd
+          ls -la
+          find . -name pom.xml
+
+      - name: Run Consumer Tests
+        run: mvn -f pom.xml -pl pos clean test
+
+      - name: Publish Pact
+        if: success()
+        run: mvn -f pom.xml -pl pos pact:publish
+
+      - name: Can I Deploy
+        if: success()
+        run: mvn -f pom.xml -pl pos pact:can-i-deploy
