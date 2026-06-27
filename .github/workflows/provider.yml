@@ -31,9 +31,7 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Fetch Pact
-        run: mvn -f sat-assesment2706/pom.xml -pl oms pact:fetch
-
+     
       - name: Verify Provider
         run: mvn -f sat-assesment2706/pom.xml -pl oms test
 
