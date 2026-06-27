@@ -3,48 +3,34 @@ name: Provider Pact Pipeline
 on:
   push:
     paths:
-      - 'oms/**'
+      - 'sat-assessment2706/oms/**'
       - '.github/workflows/provider.yml'
   pull_request:
     paths:
-      - 'oms/**'
+      - 'sat-assessment2706/oms/**'
       - '.github/workflows/provider.yml'
 
 jobs:
   provider-verification:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: .
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
 
-      - name: Verify Repository
-        run: |
-          pwd
-          ls -la
-          find . -name pom.xml
-
       - name: Fetch Pact
-        run: mvn -f pom.xml -pl oms pact:fetch
+        run: mvn -f sat-assessment2706/pom.xml -pl oms pact:fetch
 
       - name: Verify Provider
-        run: mvn -f pom.xml -pl oms test
+        run: mvn -f sat-assessment2706/pom.xml -pl oms test
 
       - name: Publish Verification
-        if: success()
-        run: mvn -f pom.xml -pl oms pact:verify
+        run: mvn -f sat-assessment2706/pom.xml -pl oms pact:verify
 
       - name: Can I Deploy
-        if: success()
-        run: mvn -f pom.xml -pl oms pact:can-i-deploy
+        run: mvn -f sat-assessment2706/pom.xml -pl oms pact:can-i-deploy

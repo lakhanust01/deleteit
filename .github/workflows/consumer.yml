@@ -3,11 +3,11 @@ name: Consumer Pact Pipeline
 on:
   push:
     paths:
-      - 'pos/**'
+      - 'sat-assessment2706/pos/**'
       - '.github/workflows/consumer.yml'
   pull_request:
     paths:
-      - 'pos/**'
+      - 'sat-assessment2706/pos/**'
       - '.github/workflows/consumer.yml'
 
 jobs:
@@ -15,31 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
 
-      - name: Debug Repository
-        run: |
-          pwd
-          echo "---------------- ROOT ----------------"
-          ls -la
-          echo "---------------- ALL FILES ----------------"
-          find . -maxdepth 3
-
       - name: Run Consumer Tests
-        run: mvn -pl pos test
+        run: mvn -f sat-assessment2706/pom.xml -pl pos test
 
       - name: Publish Pact
-        if: success()
-        run: mvn -pl pos pact:publish
+        run: mvn -f sat-assessment2706/pom.xml -pl pos pact:publish
 
       - name: Can I Deploy
-        if: success()
-        run: mvn -pl pos pact:can-i-deploy
+        run: mvn -f sat-assessment2706/pom.xml -pl pos pact:can-i-deploy
