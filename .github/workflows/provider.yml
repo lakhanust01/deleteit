@@ -41,4 +41,4 @@ jobs:
           -pl oms
           pact:can-i-deploy
           -Dpacticipant=oms
-          -Dversion=1.0-SNAPSHOT
+          -DpacticipantVersion=1.0-SNAPSHOT
