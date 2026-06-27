@@ -43,4 +43,9 @@ jobs:
 
       - name: Can I Deploy
         if: success()
-        run: mvn -f sat-assesment2706/pom.xml -pl oms pact:can-i-deploy
+        run: >
+          mvn -f sat-assesment2706/pom.xml
+          -pl oms
+          pact:can-i-deploy
+          -Dpacticipant=oms
+          -Dversion=1.0-SNAPSHOT
