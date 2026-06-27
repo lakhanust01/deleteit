@@ -17,6 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Show Repository Structure
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 4 -type f -name "pom.xml"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
